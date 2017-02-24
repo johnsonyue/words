@@ -1,0 +1,56 @@
+import HTMLParser
+import re
+
+iciba_base_url = "http://www.iciba.com/"
+
+class iciba_parser(HTMLParser.HTMLParser):
+	def __init__(self):
+		HTMLParser.HTMLParser.__init__(self)
+		
+		self.is_class = False
+		self.is_collins = False
+		self.nest_cnt = 0
+		self.inner_html = ""
+		self.speak = ""
+		self.word = ""
+		self.articles = []
+
+	def get_attr_value(self, target, attrs):
+		for e in attrs:
+			key = e[0]
+			value = e[1]
+			if (key == target):
+				return value
+		return ""
+
+	def handle_starttag(self, tag, attrs):
+		#print ("start <"+tag+">")
+		if (tag == "div" and self.get_attr_value("class",attrs) == "info-article"):
+			self.inner_html = ""
+			self.is_class = True
+		elif (tag == "div" and self.is_class):
+			self.nest_cnt += 1
+		
+		if (self.is_class):
+			if not (tag == "div" and self.nest_cnt):
+				self.inner_html+="<"+tag+">"
+		
+	
+	def handle_endtag(self, tag):
+		#print "end </"+tag+">"
+		
+		if (self.is_class):
+			if not (tag == "div" and self.nest_cnt):
+				self.inner_html+="</"+tag+">"
+
+		if (tag == "div" and self.nest_cnt):
+			self.nest_cnt -= 1
+		elif (tag == "div" and self.is_class):
+			self.articles.append(self.inner_html)
+			self.is_class = False
+		
+	def handle_data(self, data):
+		if (self.is_class):
+			self.inner_html += data
+		if (re.findall("]$", data)):
+			self.speak = data

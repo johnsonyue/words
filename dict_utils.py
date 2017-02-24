@@ -1,15 +1,19 @@
-//Data Structures.
+import urllib2
+
+import sources
+
+#Data Structures.
 def new_form(spelling, pronounce):
 	return {"spelling":spelling, "pronounce":pronounce}
 
-def new_word(spelling, pronounce, property, tranlation):
+def new_word(spelling, pronounce, property, translation, examples):
 	form = new_form(spelling, pronounce)
-	return {"form":form, "property":property, "translation":translation, "ts":ts, "cnt":cnt}
+	return form, {"property":property, "translation":translation}
 
 def new_form_rule(func, label):
 	return {"func":func, "label":label, "forms":[]}
 
-def new_word_rule(leader, label, ts, cnt):
+def new_word_rule(leader, label):
 	return {"leader":leader, "label":label, "words":[]}
 
 def new_sentence(sentence, label, ts, cnt):
@@ -18,39 +22,63 @@ def new_sentence(sentence, label, ts, cnt):
 form_group_lt = {}
 word_group_lt = {}
 
-//Knowledge Bank.
-////nodes.
+#Knowledge Bank.
+##nodes.
 form_dict = {}
 word_dict = {}
 sentence_dict = {}
-////links.
+##links.
 form_groups = {}
 word_groups = {}
 
-//Actions.
+#Actions.
 def lookup(spelling):
-	print ("Looking up " + spelling)
-	//todos: find source, parse source to word
-	print ("Done.")
-	return word
+	words = query(spelling)
+	if not words:
+		print "Not a word"
+		return
 
-def relate(word):
-	//todos: implement search functions.
-	fids=search_form(word)
-	wids=search_word(word)
-	sids=search_sentence(word)
+	interact(words)
+	return words
+
+def query(spelling):
+	#todos: add more sources.
+	base_url = sources.iciba_base_url
+	parser = sources.iciba_parser()
 	
-	return {}
+	url = base_url + spelling
+	request = urllib2.Request(url);
+	request.add_header('User-agent','Mozilla/5.0');
+	f = urllib2.urlopen(request);
+	parser.feed(f.read())
+	f.close()
 
-def add_word(spelling):
-	word = lookup(spelling)
-	if not word:
-		//todos: implement not_word()
-		not_word()
-	else:
-		//todos: implemets crud.
-		if word.cnt >= 1:
-			inc_word(cnt+1,ts)
-		else:
-			relation = relate(word)
-			insert_word(word,relation)
+	if parser.speak == "":
+		return None
+
+	words = []
+	for k in range(1,len(parser.word.keys())+1):
+		property = parser.word[str(k)][0]
+		translation = {"ee":parser.word[str(k)][1], "ec":parser.word[str(k)][2]}
+		examples = None
+		if ( len(parser.word.keys()) > 3 ):
+			examples = word[str(k)][3:]
+
+		words.append( new_word(spelling,parser.speak,property,translation,examples) )
+
+	return words
+
+def match(words):
+	#if word.cnt >= 1:
+	#	inc_word(cnt+1,ts)
+	#else:
+	#	insert_word(word,relation)
+	return ""
+
+def relate(words):
+	##todos: implement search functions.
+	#fids=search_form(words)
+	#wids=search_word(words)
+	#sids=search_sentence(words)
+	
+	return ""
