@@ -42,7 +42,7 @@ class iciba_parser(HTMLParser.HTMLParser):
 		if (data.replace('\n','').replace('\t','').replace(' ','').replace('\n\r','') == ""):
 			return
 
-		if (re.findall("]$", data)):
+		if (re.findall("^美.*]$", data) or re.findall(".*]$", data)): 
 			self.speak = data
 
 		if ( self.is_collins and re.findall("^[0-9]", data) ):
