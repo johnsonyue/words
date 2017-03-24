@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>johnsonyue.workflow.hello</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<key>1C8612C9-9D19-4376-8A9A-52B15321C7AE</key>
+		<array/>
+		<key>1F5F4C8E-8A98-44FA-96B9-9B06F573CB0D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>2B3B2686-1B15-48A2-96E4-8F011116F5BE</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>1C8612C9-9D19-4376-8A9A-52B15321C7AE</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>C18CDDA0-EAD1-4371-9167-023C167F25EE</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>5711A907-FE52-44AA-90C4-DDD9C604153B</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>johnsonyue</string>
+	<key>description</key>
+	<string>workflow for quick word look up</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>LookUp</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>paths</key>
+				<array>
+					<string>/Applications/iTerm.app</string>
+				</array>
+				<key>toggle</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.launchfiles</string>
+			<key>uid</key>
+			<string>5711A907-FE52-44AA-90C4-DDD9C604153B</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>17</integer>
+				<key>hotmod</key>
+				<integer>1310720</integer>
+				<key>hotstring</key>
+				<string>T</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>C18CDDA0-EAD1-4371-9167-023C167F25EE</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>keyword</key>
+				<string>lu</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>LookUpWords</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>1F5F4C8E-8A98-44FA-96B9-9B06F573CB0D</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>http://www.iciba.com/{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>2B3B2686-1B15-48A2-96E4-8F011116F5BE</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>applescript</key>
+				<string>on alfred_script(q)
+	if application "iTerm" is running then
+		run script "
+			on run {q}
+				set cmd to \"python ~/python_workspace/words/lu.py \" &amp; q
+				tell application \":Applications:iTerm.app\"
+					activate
+					try
+						select first window
+						set onlywindow to false
+					on error
+						create window with default profile
+						select first window
+						set onlywindow to true
+					end try
+					tell the first window
+						if onlywindow is false then
+							create tab with default profile
+						end if
+						tell current session to write text cmd
+					end tell
+				end tell
+			end run
+		" with parameters q
+	else
+		run script "
+			on run {q}
+				set cmd to \"python ~/python_workspace/words/lu.py \" &amp; q
+				tell application \":Applications:iTerm.app\"
+					activate
+					try
+						select first window
+					on error
+						create window with default profile
+						select first window
+					end try
+					tell the first window
+						tell current session to write text cmd
+					end tell
+				end tell
+			end run
+		" with parameters q
+	end if
+end alfred_script</string>
+				<key>cachescript</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.applescript</string>
+			<key>uid</key>
+			<string>1C8612C9-9D19-4376-8A9A-52B15321C7AE</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>1C8612C9-9D19-4376-8A9A-52B15321C7AE</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>340</integer>
+		</dict>
+		<key>1F5F4C8E-8A98-44FA-96B9-9B06F573CB0D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>70</integer>
+			<key>ypos</key>
+			<integer>180</integer>
+		</dict>
+		<key>2B3B2686-1B15-48A2-96E4-8F011116F5BE</key>
+		<dict>
+			<key>xpos</key>
+			<integer>310</integer>
+			<key>ypos</key>
+			<integer>190</integer>
+		</dict>
+		<key>5711A907-FE52-44AA-90C4-DDD9C604153B</key>
+		<dict>
+			<key>xpos</key>
+			<integer>290</integer>
+			<key>ypos</key>
+			<integer>30</integer>
+		</dict>
+		<key>C18CDDA0-EAD1-4371-9167-023C167F25EE</key>
+		<dict>
+			<key>xpos</key>
+			<integer>80</integer>
+			<key>ypos</key>
+			<integer>30</integer>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string></string>
+</dict>
+</plist>

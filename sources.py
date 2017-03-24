@@ -10,6 +10,7 @@ class iciba_parser(HTMLParser.HTMLParser):
 		
 		self.is_collins = False
 		self.is_class = False
+		self.is_bold = False
 		self.nest_cnt = 0
 		self.speak = ""
 		self.number = ""
@@ -21,6 +22,9 @@ class iciba_parser(HTMLParser.HTMLParser):
 		elif (tag == "div" and self.is_class):
 			self.nest_cnt += 1
 		
+		if (tag == "b"):
+			self.is_bold = True
+		
 	def handle_endtag(self, tag):
 		if (tag == "div" and self.nest_cnt):
 			self.nest_cnt -= 1
@@ -29,6 +33,9 @@ class iciba_parser(HTMLParser.HTMLParser):
 		
 		if (self.is_collins and not self.is_class):
 			self.is_collins = False
+		
+		if (tag == "b" and self.is_bold):
+			self.is_bold = False
 
 	def get_attr_value(self, target, attrs):
 		for e in attrs:
@@ -45,11 +52,14 @@ class iciba_parser(HTMLParser.HTMLParser):
 		if (re.findall("^美.*]$", data) or re.findall(".*]$", data)): 
 			self.speak = data
 
-		if ( self.is_collins and re.findall("^[0-9]", data) ):
+		if ( self.is_collins and re.findall("^[0-9]*$", data) ):
 			self.number = data
 			self.word[self.number] = []
 		elif ( self.is_collins ):
-			self.word[self.number].append(data)
+			if (self.is_bold and self.word[self.number]):
+				self.word[self.number][-1] = self.word[self.number][-1] + data
+			else:
+				self.word[self.number].append(data)
 
 		if (self.is_class and re.findall("柯林斯", data)):
 			self.is_collins = True

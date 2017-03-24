@@ -99,3 +99,22 @@ class crud():
 		
 	def sync(self):
 		return ""
+
+	
+	def list(self):
+		print "Total: "+str(len(self.form_dict.keys()))+" words"
+		for k in sorted(self.form_dict.keys()):
+			spelling = self.form_dict[k]["spelling"]
+			pronounce = self.form_dict[k]["pronounce"]
+			print "    "+spelling+'\t'+pronounce
+			word_key_list = self.form_dict[k]["word_key_list"]
+			for w in word_key_list:
+				property = self.word_dict[w]["property"]
+				translation = self.word_dict[w]["translation"]
+				t = ""
+				if translation.has_key("ec"):
+					t = translation["ec"]
+				elif translation.has_key("e*"):
+					t = translation["e*"]
+				
+				print "      "+property+'\t'+t
